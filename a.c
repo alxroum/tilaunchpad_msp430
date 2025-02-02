@@ -5,32 +5,25 @@ int main(void) {
 	BCSCTL1 = CALBC1_1MHZ;     // Run @ 1MHz
 	DCOCTL  = CALDCO_1MHZ;
 
-	
 
-	P2DIR |= BIT0; // enabling output on pin 2.0
-	P2DIR |= BIT1; // pin 2.1
-	P2DIR |= BIT2;
-	P2DIR |= BIT3;
-	P2DIR |= BIT4;
-	P2DIR |= BIT5;
-	P2DIR |= BIT6; // pin 2.6
+    light_segments();
 
+    enable_digits();
 
-	//bit1 turns on          u5
-	//bit4 turns on      u4
-	//~bit1 turns on u3, u4
-	//~bit2 turns on u3, u4, u5
-	//~bit4 turns on u3,     u5
+    while (1); // Keep the program running
+}
 
-	P3DIR |= ~BITC; // this determines how many numbers are displayed somehow 
+void enable_digits() {
+    // setting the digits we want to be displayed as outputs
+    P3DIR |= BIT0 | BIT1 | BIT4 | BIT7; 
 
+    // turning on the bits for which digits we want shown
+    P3OUT &= (~BIT0 | ~BIT1 | ~BIT4 | ~BIT7);
+    // doing operation again to flip from off to on
+    P3OUT &= ~(BIT0 | BIT1 | BIT4 | BIT7);
+}
 
-	P2OUT |= BIT0;
-	P2OUT |= BIT1;
-	P2OUT |= BIT2;
-	P2OUT |= BIT3;
-	P2OUT |= BIT4;
-	P2OUT |= BIT5;
-	P2OUT |= BIT6;
-	//P3OUT = BIT0;
+void light_segments() {
+    // enabling all possible segments as outputs (this also turns on the segments)
+	P2DIR |= BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5; // set pin 2.0-2.6 as an output
 }
