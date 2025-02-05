@@ -7,12 +7,25 @@ int main(void) {
 	DCOCTL  = CALDCO_1MHZ;
 
     int i = 0;
+    int timeDelay = 0; // incrementer that delays time between displayVal
+    int displayVal = 0; // value to display on segments
     int segments = 0b0000000; // this will change the segments that light up on the current "frame" or loop iteration
 
     while (1) { // Keep the program running
         //print_something();
 
         //segments = 0b0000000;
+        
+        if(timeDelay > 100) {
+            timeDelay = 0;
+            displayVal++;
+        } else {
+            timeDelay++;
+        }
+
+        if(displayVal > 9) {
+            displayVal = 0;
+        } 
 
         int digits = 0b0000;
         disable_digits();
@@ -20,19 +33,19 @@ int main(void) {
 
         if(i == 0) {
             digits |= BIT0;
-            segments = 0b0110000; // segments to be lit at digit 0
+            segments = number_to_segments(displayVal); // segments to be lit at digit 0
         }
         if(i == 1) {
             digits |= BIT1;
-            segments = 0b1011011;
+            segments = number_to_segments(displayVal + 1);
         }
         if(i == 2) {
             digits |= BIT4;
-            segments = 0b1110100;
+            segments = number_to_segments(displayVal + 3);
         }
         if(i == 3) {
             digits |= BIT7;
-            segments = 0b1111111;
+            segments = number_to_segments(displayVal + 4);
         }
 
         enable_digits(digits);
@@ -80,4 +93,42 @@ void disable_segments() { // turn off any lingering bits so that they are not le
     // BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | BIT6
     P2DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | BIT6);
     P2OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | BIT6); // turns off bit segment c
+}
+
+int number_to_segments(int n) {
+
+    if(n > 9) {
+        n = n - 10;
+    }
+
+    if(n == 0) {
+        return 0b0111111;
+    }
+    if(n == 1) {
+        return 0b0110000;
+    }
+    if(n == 2) {
+        return 0b1011011;
+    }
+    if(n == 3) {
+        return 0b1111001;
+    }
+    if(n == 4) {
+        return 0b1110100;
+    }
+    if(n == 5) {
+        return 0b1101101;
+    }
+    if(n == 6) {
+        return 0b1101111;
+    }
+    if(n == 7) {
+        return 0b0111000;
+    }
+    if(n == 8) {
+        return 0b1111111;
+    }
+    if(n == 9) {
+        return 0b1111101;
+    }
 }
