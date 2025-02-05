@@ -1,17 +1,21 @@
 #include <stdio.h>
 #include <msp430.h>
+#include <libemb/serial/serial.h>
+#include <libemb/conio/conio.h>
 
 int main(void) {
 	WDTCTL  = WDTPW | WDTHOLD; // Stop watchdog timer
 	BCSCTL1 = CALBC1_1MHZ;     // Run @ 1MHz
 	DCOCTL  = CALDCO_1MHZ;
 
-    scramble();
+    //scramble();
+    method2();
+
 }
 
 void enable_digits(int d) {
     // setting the digits we want to be displayed as outputs
-    P3DIR |= d; 
+    P3DIR |= d;
 
     // turning off the bits for which digits we want shown
     P3OUT &= ~(d);
@@ -83,8 +87,9 @@ int number_to_segments(int n) {
 void scramble() {
 
     int i = 0;
-    int timeDelay = 0; // how fast numbers change
+    int timeDelay = 0;
     int displayVal = 0;
+    int timeBeforeSwitch = 35; // time delay before numbers update
     int segments = 0b0000000; // this will change the segments that light up on the current "frame" or loop iteration
 
     while (1) { // Keep the program running
@@ -92,7 +97,7 @@ void scramble() {
 
         //segments = 0b0000000;
         
-        if(timeDelay > 100) {
+        if(timeDelay > timeBeforeSwitch) {
             timeDelay = 0;
             displayVal++;
         } else {
@@ -117,23 +122,41 @@ void scramble() {
         }
         if(i == 2) {
             digits |= BIT4;
-            segments = number_to_segments(displayVal + 3);
+            segments = number_to_segments(displayVal + 2);
         }
         if(i == 3) {
             digits |= BIT7;
-            segments = number_to_segments(displayVal + 4);
+            segments = number_to_segments(displayVal + 3);
         }
 
         enable_digits(digits);
 
         light_segments(segments);
 
-        __delay_cycles(1500);
+        __delay_cycles(1500); // 1500 is a good speed
 
         if(i >= 3) {
             i = 0;
         } else {
             i++;
         }
+    }
+}
+
+void method2() {
+
+    int i = 0;
+    int segments = 0b0000000; // this will change the segments that light up on the current "frame" or loop iteration
+
+    serial_init(9600);
+
+    while (1) { // Keep the program running
+
+        P1DIR &= ~BIT4;
+        //P1OUT |= BIT4;
+        cio_printf("%d\n\r", P1IN & BIT4);
+        
+
+        __delay_cycles(15000);
     }
 }
