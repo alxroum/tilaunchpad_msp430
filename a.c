@@ -6,60 +6,7 @@ int main(void) {
 	BCSCTL1 = CALBC1_1MHZ;     // Run @ 1MHz
 	DCOCTL  = CALDCO_1MHZ;
 
-    int i = 0;
-    int timeDelay = 0; // incrementer that delays time between displayVal
-    int displayVal = 0; // value to display on segments
-    int segments = 0b0000000; // this will change the segments that light up on the current "frame" or loop iteration
-
-    while (1) { // Keep the program running
-        //print_something();
-
-        //segments = 0b0000000;
-        
-        if(timeDelay > 100) {
-            timeDelay = 0;
-            displayVal++;
-        } else {
-            timeDelay++;
-        }
-
-        if(displayVal > 9) {
-            displayVal = 0;
-        } 
-
-        int digits = 0b0000;
-        disable_digits();
-        disable_segments();
-
-        if(i == 0) {
-            digits |= BIT0;
-            segments = number_to_segments(displayVal); // segments to be lit at digit 0
-        }
-        if(i == 1) {
-            digits |= BIT1;
-            segments = number_to_segments(displayVal + 1);
-        }
-        if(i == 2) {
-            digits |= BIT4;
-            segments = number_to_segments(displayVal + 3);
-        }
-        if(i == 3) {
-            digits |= BIT7;
-            segments = number_to_segments(displayVal + 4);
-        }
-
-        enable_digits(digits);
-
-        light_segments(segments);
-
-        __delay_cycles(1500);
-
-        if(i >= 3) {
-            i = 0;
-        } else {
-            i++;
-        }
-    }
+    scramble();
 }
 
 void enable_digits(int d) {
@@ -130,5 +77,63 @@ int number_to_segments(int n) {
     }
     if(n == 9) {
         return 0b1111101;
+    }
+}
+
+void scramble() {
+
+    int i = 0;
+    int timeDelay = 0; // how fast numbers change
+    int displayVal = 0;
+    int segments = 0b0000000; // this will change the segments that light up on the current "frame" or loop iteration
+
+    while (1) { // Keep the program running
+        //print_something();
+
+        //segments = 0b0000000;
+        
+        if(timeDelay > 100) {
+            timeDelay = 0;
+            displayVal++;
+        } else {
+            timeDelay++;
+        }
+
+        if(displayVal > 9) {
+            displayVal = 0;
+        } 
+
+        int digits = 0b0000;
+        disable_digits();
+        disable_segments();
+
+        if(i == 0) {
+            digits |= BIT0;
+            segments = number_to_segments(displayVal); // segments to be lit at digit 0
+        }
+        if(i == 1) {
+            digits |= BIT1;
+            segments = number_to_segments(displayVal + 1);
+        }
+        if(i == 2) {
+            digits |= BIT4;
+            segments = number_to_segments(displayVal + 3);
+        }
+        if(i == 3) {
+            digits |= BIT7;
+            segments = number_to_segments(displayVal + 4);
+        }
+
+        enable_digits(digits);
+
+        light_segments(segments);
+
+        __delay_cycles(1500);
+
+        if(i >= 3) {
+            i = 0;
+        } else {
+            i++;
+        }
     }
 }
