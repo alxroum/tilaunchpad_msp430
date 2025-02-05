@@ -150,13 +150,29 @@ void method2() {
 
     serial_init(9600);
 
+    configureADC10();
+
     while (1) { // Keep the program running
 
         P1DIR &= ~BIT4;
         //P1OUT |= BIT4;
-        cio_printf("%d\n\r", P1IN & BIT4);
+
+        cio_printf("%d, %d\n\r", P1DIR, readADC());
+        
         
 
-        __delay_cycles(15000);
+        __delay_cycles(150000);
     }
+}
+
+void configureADC10() {
+    ADC10CTL1 = INCH_4;
+    ADC10CTL0 = SREF_0 | ADC10SHT_2 | ADC10ON;
+    ADC10AE0 |= BIT4;
+}
+
+unsigned int readADC() {
+    ADC10CTL0 |= ENC | ADC10SC;
+    while(ADC10CTL1 & ADC10BUSY);
+    return ADC10MEM;
 }
