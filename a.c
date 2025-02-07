@@ -8,8 +8,8 @@ int main(void) {
 	BCSCTL1 = CALBC1_1MHZ;     // Run @ 1MHz
 	DCOCTL  = CALDCO_1MHZ;
 
-    //scramble();
-    method2();
+    scramble();
+    //method2();
 
 }
 
@@ -142,7 +142,7 @@ void scramble() {
         }
     }
 }
-
+/*
 void method2() {
 
     int i = 0;
@@ -175,4 +175,4 @@ unsigned int readADC() {
     ADC10CTL0 |= ENC | ADC10SC;
     while(ADC10CTL1 & ADC10BUSY);
     return ADC10MEM;
-}
+} */
